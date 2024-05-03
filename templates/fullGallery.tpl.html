@@ -1,0 +1,111 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+
+<main class="container">
+    {% if errorMessage is defined %}
+        <div class="text-center">
+            <p class="fw-bold {{ successMessage is defined and successMessage is same as(true) ? 'text-success' : 'text-danger'}}">{{errorMessage}}</p>
+        </div>
+    {% endif %}
+
+    {% if galleryNotFound %}
+    <div class="col text-center">
+        <p class="h1">Gallery not found</p>
+    </div>
+    {% else %}
+    <div class="row d-flex align-items-center mb-3 mt-2 ms-2">
+        {% if titleEditingEnabled == true %}
+        <form class="col-md-6 text-wrap d-flex gap-2" method="post" action="pureScripts/update.php">
+            <input type='text' name="galleryTitle" value="{{galleryTitle}}" class="mb-0 h1 border-0" maxlength="50" autofocus> </input>
+            <input type="hidden" name="galleryId" value="{{galleryId}}">
+            <input type="hidden" name="updateType" value="galleryTitle">
+            <input type="submit" value="Save" class="btn btn-primary my-auto">
+        </form>
+        {% else %}
+        <div class="col-md-6 text-wrap" style="word-wrap: break-word;">
+            <p class="mb-0 h1">{{galleryTitle}}</p>
+        </div>
+        {% endif %}
+        <div class="col-md-2">
+            <span class="fs-4">
+                Owner:
+                <a href="profile.php?id={{ownerId}}" class="text-decoration-none mb-0" style="word-wrap: break-word;">{{ownerName}}</a>
+            </span>
+        </div>
+        <div class="col">
+            <p class="mb-0"><b>Created on: </b>{{creationDate}}</p>
+        </div>
+    </div>
+
+    <div class="row ms-2 mb-5">
+        {% if myAdmin or myUserId is same as(ownerId) %}
+        <div class="col-2">
+            <a href="?id={{galleryId}}&editTitle=true" class="btn btn-secondary mb-4">Rename</a>
+            <a href="?id={{galleryId}}&editDescription=true" class="btn btn-secondary">Edit description</a>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-3">
+            <button class="btn btn-warning mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#uploadPhoto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                    <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+                </svg>
+                Upload
+            </button>
+            <form action="pureScripts/upload.php" method="post" enctype="multipart/form-data" class="collapse form-control text-start" id="uploadPhoto">
+                <label for="photo">Max 16MiB/Image, 128MiB Total Accepted: png, jpeg</label>
+                <input type="file" name="photos[]" accept=".png, .jpg, .jpeg" class="form-control w-100" required multiple>
+                <label for="title">Title</label>
+                <input type="text" name="title" class="form-control w-100" maxlength="30">
+                <label for="description">Description</label>
+                <textarea type="text" name="description" class="form-control w-100 mb-2" maxlength="150"></textarea>
+                <input type="hidden" name="galleryId" value="{{galleryId}}">
+                <input type="hidden" name="uploadType" value="galleryPhoto">
+                <input type="submit" name="submit" value="Upload Image" class="btn btn-primary">
+            </form>
+        </div>
+        <div class="col">
+            <button class="btn btn-danger mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#deleteGallery">Delete gallery</button>
+            <form action="pureScripts/delete.php" method="post" class="collapse form-control text-start" id="deleteGallery">
+                <p>Are you sure? This cannot be undone!</p>
+                <input type="hidden" name="galleryId" value="{{galleryId}}">
+                <input type="hidden" name="deleteType" value="gallery">
+                <input type="submit" name="confirmDeletion" value="Confirm" class="btn btn-danger">
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <div class="row mb-2">
+        {% if descriptionEditingEnabled == true and (myAdmin or ownerId == myUserId)%}
+        <form class="text-wrap d-flex gap-2" method="post" action="pureScripts/update.php">
+            <textarea name="galleryDescription" class="form-control" autofocus maxlength="500">{{description}}</textarea>
+            <input type="hidden" name="galleryId" value="{{galleryId}}">
+            <input type="hidden" name="updateType" value="galleryDescription">
+            <input type="submit" value="Save" class="btn btn-primary my-auto">
+        </form>
+        {% else %}
+        <div class="col border rounded bg-white">
+            <p>{{description}}</p>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row" ">
+        {% for photo in photos %}
+        <div class="col-sm-6 col-lg-4 mb-4" >
+            <div class="card">
+                <a href="image.php?id={{photo.id}}">
+                    <img class="card-img-top p-0 rounded" width="100%" height="200" src="{{photo.image}}" aria-label="Gallery iamge" style="object-fit: scale-down;"></img>
+                </a>
+                <h5 class="card-title text-center bg-light">{{photo.title}}</h5>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</main>
+    
+{% endblock %}

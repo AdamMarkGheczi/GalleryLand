@@ -1,0 +1,24 @@
+{% if not removeProfileDropdown is defined and removeProfileDropdown == FALSE %}
+
+    <div class="dropdown {{hideOnLargeScreen ? 'd-lg-none d-grid w-100' : 'd-none d-lg-inline dropstart'}} ">
+        {% if notLoggedIn %}
+            <a class="btn btn-primary" href="loginForm.php">Sign in</a>
+        {% else %}
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{{myProfilePicture}}" height="30" width="30" style="object-fit: cover;">
+            {{myUsername}}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% if notLoggedIn %}
+            <li><a class="dropdown-item" href="loginForm.php">Sign in</a></li>
+            {% else %}
+            <li><a class="dropdown-item" href="profile.php?id={{myUserId}}">My profile</a></li>
+            <li><a class="dropdown-item" href="galleryList.php?owner={{myUserId}}">My galleries</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="pureScripts/signOut.php">Sign out</a></li>          
+            {% endif %}
+        </ul>
+        {% endif %}
+    </div>
+{% endif %}
+

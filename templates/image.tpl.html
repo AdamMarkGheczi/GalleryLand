@@ -1,0 +1,168 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+
+<main class="container text-center pt-3">
+        {% if errorMessage is defined %}
+            <p class="text-danger fw-bold">{{errorMessage}}</p>
+        {% endif %}
+
+        <a href="fullGallery.php?id={{photo.galleryId}}" class="text-decoration-none mb-5 d-inline-block h1 text-primary">{{photo.galleryTitle}}</a>
+        <div class="container mb-3">
+            <div class="row gap-2">
+                <div class="col-md-9 border border-black p-0 rounded-bottom d-flex flex-column justify-content-between">
+                    <img src="{{photo.image}}" alt="" class="img-fluid" style="max-height: 50vh; object-fit: contain;">
+                    <div class="bg-danger rounded-bottom d-flex justify-content-between px-4">
+                        <a href="image.php?id={{prevId}}" class="carousel-control-prev-icon btn border-0 {{prevId == -1 ? 'disabled' : ''}}"></a>
+                        <a href="image.php?id={{nextId}}" class="carousel-control-next-icon btn border-0 {{nextId == -1 ? 'disabled' : ''}}"></a>
+                    </div>
+                </div>
+                <div class="col border">
+                    
+                    {% if editTitle is defined and editTitle == true and (myAdmin or photo.ownerId == myUserId) %}
+                        <form class="d-flex gap-2 mt-2" method="post" action="pureScripts/update.php">
+                            <input type='text' name="photoTitle" value="{{photo.imageTitle}}" class="border-0 w-100" maxlength="30" autofocus> </input>
+                            <input type="hidden" name="photoId" value="{{photo.id}}">
+                            <input type="hidden" name="updateType" value="photoTitle">
+                            <input type="submit" value="Save" class="btn btn-primary my-auto">
+                        </form>
+                    {% else %}
+                        <p class="fs-3 mb-1">{{photo.imageTitle}}</p>
+                    {% endif %}
+
+                    <a href="profile.php?id={{photo.ownerId}}" class="text-decoration-none fs-4">{{photo.ownerName}}</a>
+                    <p class="mb-4">{{photo.uploadDate}}</p>
+
+                    {% if editDescription is defined and editDescription == true and (myAdmin or photo.ownerId == myUserId) %}
+                        <form class="d-flex gap-2 mb-3" method="post" action="pureScripts/update.php">
+                            <textarea type='text' name="photoDescription" class="border-0 w-100" maxlength="150" autofocus>{{photo.description}}</textarea>
+                            <input type="hidden" name="photoId" value="{{photo.id}}">
+                            <input type="hidden" name="updateType" value="photoDescription">
+                            <input type="submit" value="Save" class="btn btn-primary my-auto">
+                        </form>
+                    {% else %}
+                        <p class="text-start">{{photo.description}}</p>
+                    {% endif %}
+
+                    {% if myAdmin or photo.ownerId == myUserId %}
+                    <div class="d-flex flex-column gap-2">
+                        <a href="image.php?id={{photo.id}}&editTitle=true" class="btn btn-secondary d-inline-block">Edit title</a>
+                        <a href="image.php?id={{photo.id}}&editDescription=true" class="btn btn-warning">Edit description</a>
+                        <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#deletePhoto">Delete image</button>
+
+                        <form action="pureScripts/delete.php" method="post" class="collapse form-control text-start" id="deletePhoto">
+                            <p>Are you sure? This cannot be undone!</p>
+                            <input type="hidden" name="photoId" value="{{photo.id}}">
+                            <input type="hidden" name="deleteType" value="photo">
+                            <input type="submit" name="confirmDeletion" value="Confirm" class="btn btn-danger">
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="text-start">
+            <div class="d-flex align-items-center gap-4 mb-5">
+                <p class="h1 d-inline">Comments</p>
+                <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#commentTextBox">+ Write comment</button>
+            </div>
+
+            <div class="collapse border border-3 border-primary" id="commentTextBox">
+                <div class="d-flex">
+                    <div class="d-flex flex-column" style="width: 100px;">
+                        <img src="{{myProfilePicture}}" height="100" width="100" class="border border-start-0">
+                        <span class="text-center fw-bold" style="word-wrap: break-word;">{{myUsername}}</span>
+                    </div>
+                    <form class="flex gap-2 mb-3 w-100 border-top" method="post" action="pureScripts/upload.php">
+                        <textarea type='text' name="content" class="border-0 w-100" maxlength="300" style="min-height: 100px;"></textarea>
+                        <input type="hidden" name="userId" value="{{myUserId}}">
+                        <input type="hidden" name="uploadType" value="comment">
+                        <input type="hidden" name="photoId" value="{{photo.id}}">
+                        <input type="submit" value="Comment" class="btn btn-primary my-auto">
+                    </form>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="border">
+                </div>
+            </div>
+
+
+<!--
+    id 
+    ownerId
+    ownerPicture
+    ownerName
+    postDate
+    content
+ -->
+            {% for comment in comments %} 
+                <div class="border container p-0 mb-5">
+                    <div class="row">
+                        <div class="col-3 col-md-2 col-lg-2 col-xl-1">
+                            <a href="profile.php?id={{comment.ownerId}}">
+                                <img src="{{comment.ownerPicture}}" height="100" width="100" class="border border-start-0">
+                            </a>
+                        </div>
+                        <div class="col">
+                            {% if editComment == comment.id  and (myAdmin or comment.ownerId == myUserId) %}
+                                <form class="d-flex gap-2 mb-3" method="post" action="pureScripts/update.php">
+                                    <textarea type='text' name="content" class="border-0 w-100" maxlength="300" autofocus>{{comment.content}}</textarea>
+                                    <input type="hidden" name="commentId" value="{{comment.id}}">
+                                    <input type="hidden" name="updateType" value="comment">
+                                    <input type="hidden" name="returnUrl" value="image.php?id={{photo.id}}">
+                                    <input type="submit" value="Save" class="btn btn-primary my-auto">
+                                </form>
+                            {% else %}
+                                <p class="border-0 bg-white w-100" style="min-height: 100px;">{{comment.content}}</p>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <a href="profile.php?id={{comment.ownerId}}" class="text-black text-decoration-none">
+                                <span class="text-center fw-bold" style="word-wrap: break-word;">{{comment.ownerName}}</span>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <span class="text-center fw-bold" style="word-wrap: break-word;">Posted on: {{comment.postDate}}</span>
+                        </div>
+                    </div>
+
+                    {% if myAdmin or myUserId == comment.ownerId %}
+                    <div class="row">
+                        {% if editComment == comment.id  and (myAdmin or comment.ownerId == myUserId) %}
+                            <div class="col">
+                                <form class="" method="post" action="pureScripts/delete.php">
+                                    <input type="hidden" name="deleteType" value="comment">
+                                    <input type="hidden" name="returnUrl" value="image.php?id={{photo.id}}">
+                                    <input type="hidden" name="commentId" value="{{comment.id}}">
+                                    <input type="submit" value="Delete comment" class="btn btn-danger">
+                                </form>
+                            </div>
+                        {% else %}
+                        <div class="col text-center">
+                            <a href="image.php?id={{photo.id}}&editComment={{comment.id}}" class="btn btn-secondary">Edit comment</a>
+                        </div>
+                        <div class="col text-center">
+                            <form class="" method="post" action="pureScripts/delete.php">
+                                <input type="hidden" name="deleteType" value="comment">
+                                <input type="hidden" name="returnUrl" value="image.php?id={{photo.id}}">
+                                <input type="hidden" name="commentId" value="{{comment.id}}">
+                                <input type="submit" value="Delete comment" class="btn btn-danger">
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+        </div>
+            
+        
+</main>
+
+{% endblock %}

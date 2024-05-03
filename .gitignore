@@ -1,0 +1,5 @@
+designs/
+vendor/
+composer.json
+composer.lock
+*.db

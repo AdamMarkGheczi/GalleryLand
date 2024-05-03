@@ -1,0 +1,24 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+
+    <main class="container text-center">
+        {% if errorMessage is defined %}
+            <h1 class="mb-2 mt-3 fw-bold">New gallery</h1>
+            <div class="text-center">
+                <p class="fw-bold text-danger mb-4">{{errorMessage}}</p>
+            </div>
+        {% else %}
+            <h1 class="mb-5 mt-3 fw-bold">New gallery</h1>
+        {% endif %}
+        <form method="post" action="pureScripts/createGalleryScript.php" class="form-control text-start">
+            <label for="galleryTitle">Title</label>
+            <input type="text" name="galleryTitle" class="form-control" maxlength="50">
+            <label for="galleryDescription">Description</label>
+            <textarea type="text" name="galleryDescription" class="form-control" maxlength="500"></textarea>
+            <input type="hidden" name="userId" value="{{myUserId}}">
+            <input type="submit" value="Submit" class="btn btn-primary mt-3">
+        </form>
+    </main>
+
+{% endblock%}

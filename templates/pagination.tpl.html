@@ -1,0 +1,53 @@
+<!-- $paginationArray = [
+    'totalPages' => $totalPages,
+    'currentPage' => $page,
+    'neighbourPages' => [1, 2, 3 ...]
+]; -->
+
+{% if type == 'galleryList' %}
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {{ paginationArray.currentPage == 1 ? 'disabled' : ''}}">
+            <a class="page-link" href="galleryList.php?page=1{{ownerName is defined ? '&owner=' ~ ownerId : ''}}">&laquo;</a>
+        </li>
+        <li class="page-item {{ paginationArray.currentPage == 1 ? 'disabled' : ''}}">
+            <a class="page-link" href="galleryList.php?page={{paginationArray.currentPage-1}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}">Previous</a>
+        </li>
+        {% for pageNr in paginationArray.neighbourPages %}
+            <li class="page-item"><a class="page-link {{paginationArray.currentPage == pageNr ? 'active' : ''}}" href="galleryList.php?page={{pageNr}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}">{{pageNr}}</a></li>
+        {% endfor %}
+        <li class="page-item {{ paginationArray.currentPage == paginationArray.totalPages ? 'disabled' : ''}}">
+            <a class="page-link" href="galleryList.php?page={{paginationArray.currentPage+1}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}">Next</a>
+        </li>
+        <li class="page-item {{ paginationArray.currentPage == paginationArray.totalPages ? 'disabled' : ''}}">
+            <a class="page-link" href="galleryList.php?page={{paginationArray.totalPages}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}">&raquo;</a>
+        </li>
+    </ul>    
+</nav>
+
+{% endif %}
+
+{% if type == 'userList' %}
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {{ paginationArray.currentPage == 1 ? 'disabled' : ''}}">
+            <a class="page-link" href="manageAllUsers.php?page=1">&laquo;</a>
+        </li>
+        <li class="page-item {{ paginationArray.currentPage == 1 ? 'disabled' : ''}}">
+            <a class="page-link" href="manageAllUsers.php?page={{paginationArray.currentPage-1}}">Previous</a>
+        </li>
+        {% for pageNr in paginationArray.neighbourPages %}
+            <li class="page-item"><a class="page-link {{paginationArray.currentPage == pageNr ? 'active' : ''}}" href="manageAllUsers.php?page={{pageNr}}">{{pageNr}}</a></li>
+        {% endfor %}
+        <li class="page-item {{ paginationArray.currentPage == paginationArray.totalPages ? 'disabled' : ''}}">
+            <a class="page-link" href="manageAllUsers.php?page={{paginationArray.currentPage+1}}">Next</a>
+        </li>
+        <li class="page-item {{ paginationArray.currentPage == paginationArray.totalPages ? 'disabled' : ''}}">
+            <a class="page-link" href="manageAllUsers.php?page={{paginationArray.totalPages}}">&raquo;</a>
+        </li>
+    </ul>    
+</nav>
+
+{% endif %}

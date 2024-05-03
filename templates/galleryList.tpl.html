@@ -1,0 +1,92 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+
+
+<main class="container">
+{% if errorMessage is defined %}
+    <div class="text-center my-3 ">
+        <p class="text-danger fw-bold">{{errorMessage}}</p>
+    </div>
+{% else %}
+<div class="text-center my-3 ">
+    <h1 class="fw-bold">
+        {% if ownerName is defined %}
+            Galleries of {{ownerName}}
+        {% else %}
+            All galleries
+        {% endif %}
+    </h1>
+</div>
+
+{% include('pagination.tpl.html') with {'type': 'galleryList'} %}
+
+{% for gallery in galleries %}
+
+<div class="card mb-3">
+    <div class="row no-gutters">
+        <div class="col-md-4 d-flex">
+        <a href="fullGallery.php?id={{gallery.id}}" class="bg-light card-img my-auto text-center">
+            <img src="{{gallery.thumbnail}}" class="" height="200" width="400" style="object-fit: contain;">
+        </a>
+        </div>
+        <div class="col-md-8">
+        <div class="card-body">
+            {% if editTitle == gallery.id and (myAdmin or gallery.ownerId == myUserId) %}
+            <form class="text-wrap d-flex gap-2 mb-2" method="post" action="pureScripts/update.php">
+                <input type='text' name="galleryTitle" value="{{gallery.title}}" class="h5 border-0 mb-0" maxlength="50" autofocus></input>
+                <input type="hidden" name="galleryId" value="{{gallery.id}}">
+                <input type="hidden" name="updateType" value="galleryTitle">
+                <input type="hidden" name="returnUrl" value="galleryList.php?page={{paginationArray.currentPage}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}">
+                <input type="submit" value="Save" class="btn btn-primary my-auto">
+            </form>
+            {% else %}
+                <a href="fullGallery.php?id={{gallery.id}}" class="card-title h5 text-primary text-decoration-none">{{gallery.title}}</a>
+            {% endif %}
+
+            <p class="card-text">
+            <small class="text-body-secondary">
+                Created on: {{gallery.creationDate}} by: 
+                <a href="profile.php?id={{gallery.ownerId}}" class="text-primary text-decoration-none">
+                    <img src="{{gallery.ownerPicture}}" height="30" width="30" style="object-fit: cover;" class="border">{{gallery.ownerName}}
+                </a>
+            </small></p>
+            {% if editDescription == gallery.id and (myAdmin or gallery.ownerId == myUserId) %}
+            <form class="text-wrap d-flex gap-2" method="post" action="pureScripts/update.php">
+                <textarea name="galleryDescription" class="form-control" autofocus maxlength="500">{{gallery.description}}</textarea>
+                <input type="hidden" name="galleryId" value="{{gallery.id}}">
+                <input type="hidden" name="updateType" value="galleryDescription">
+                <input type="hidden" name="returnUrl" value="galleryList.php?page={{paginationArray.currentPage}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}">
+                <input type="submit" value="Save" class="btn btn-primary my-auto">
+            </form> 
+            {% else %}
+                <p class="card-text">{{gallery.description}}</p>
+            {% endif %}
+
+            {% if myAdmin or gallery.ownerId == myUserId %}
+            <div class="d-flex gap-5 mb-2">
+                <a href="galleryList.php?page={{paginationArray.currentPage}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}&editTitle={{gallery.id}}" class="btn btn-secondary">Rename</a>
+                <a href="galleryList.php?page={{paginationArray.currentPage}}{{ownerName is defined ? '&owner=' ~ ownerId : ''}}&editDescription={{gallery.id}}" class="btn btn-secondary">Edit description</a>
+                <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#deleteGallery{{gallery.id}}">Delete</button>
+            </div>
+            <form action="pureScripts/delete.php" method="post" class="collapse form-control text-start" id="deleteGallery{{gallery.id}}">
+                <p>Are you sure? This cannot be undone!</p>
+                <input type="hidden" name="galleryId" value="{{gallery.id}}">
+                <input type="hidden" name="deleteType" value="gallery">
+                <input type="submit" name="confirmDeletion" value="Confirm" class="btn btn-danger">
+            </form>
+            {% endif %}
+        </div>
+        </div>
+    </div>
+    </div>
+
+{% endfor %}
+{% include('pagination.tpl.html') with {'type': 'galleryList'} %}
+
+{% endif %}
+</main>
+
+
+
+{% endblock%}

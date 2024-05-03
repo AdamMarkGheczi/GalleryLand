@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-lg bg-light px-5 gap-4 border-bottom">
+  <a href="index.php" class="navbar-brand mb-0 d-flex align-items-center gap-1">
+    <img src="images/logo.png" alt="logo" width="50" height="50" >
+    <span class="fw-bold">GalleryLand</span>
+  </a>
+
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  {% include 'navbarDropdownBtn.tpl.html' with {'hideOnLargeScreen': true} %}
+
+  <div class="collapse navbar-collapse" id="navbarContent">
+    <ul class="navbar-nav gap-4 d-flex align-items-center">
+        <li class="nav-item">
+          <a href="index.php" class="btn btn-warning">Home</a>
+        </li>
+
+        {% if notLoggedIn is defined and notLoggedIn == false %}
+          <li>
+            <a href="galleryList.php?owner={{myUserId}}" class="btn btn-warning">My galleries</a>
+          </li>
+          <li>
+            <a href="createGallerypage.php" class="btn btn-warning">Create gallery</a>
+          </li>
+
+        {% endif %}
+        {% if myAdmin %}
+          <li>
+            <a href="galleryList.php" class="btn btn-danger">Browse and manage galleries</a>
+          </li>
+          <li>
+            <a class="btn btn-danger" href="manageAllUsers.php">Manage all users</a>
+          </li>
+        {% else %}
+          <li>
+            <a href="galleryList.php" class="btn btn-warning">Browse galleries</a>
+          </li>
+        {% endif %}
+    </ul>
+  </div>
+  
+  {% include 'navbarDropdownBtn.tpl.html' with {'hideOnLargeScreen': false} %}
+
+</nav>

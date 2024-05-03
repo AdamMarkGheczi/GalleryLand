@@ -1,0 +1,118 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+
+    <main class="container text-center">
+        {% if noUserFound %}
+            <h1 class="mt-5">User not found</h1>
+        {% else %}
+        <div class="row my-sm-5">
+                {% if pfpChangeErrorMessage is defined %}
+                    <div class="text-center">
+                        <p class="fw-bold text-danger">{{pfpChangeErrorMessage}}</p>
+                    </div>
+                {% endif %}
+                {% if usernameChangeErrorMessage is defined %}
+                    <div class="text-center">
+                        <p class="fw-bold text-danger">{{usernameChangeErrorMessage}}</p>
+                    </div>
+                {% endif %}
+                <div class="col-sm-2"></div>
+                <div class="col-md-3 text-center">
+                    <img src="{{profilePicture}}" alt="Profile picture" width="330" height="330" style="object-fit: cover;">
+                    {% if myUserId == userId or myAdmin %}
+                        <button class="btn btn-secondary my-2" type="button" data-bs-toggle="collapse" data-bs-target="#changeProfilePicture">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+                            </svg>
+                            Change profile picture
+                        </button>
+                        <form action="pureScripts/upload.php" method="post" enctype="multipart/form-data" class="collapse form-control text-start" id="changeProfilePicture">
+                            <label for="profilePicture">Max 64KiB 1:1 png jpeg</label>
+                            <input type="file" name="profilePicture" accept=".png, .jpg, .jpeg" class="form-control w-100 mb-2" required>
+                            <input type="hidden" name="userId" value="{{userId}}">
+                            <input type="hidden" name="uploadType" value="profilePicture">
+                            <input type="submit" name="submit" value="Upload Image" class="btn btn-primary">
+                        </form>
+                    {% endif %}
+                </div>
+                <div class="col-1"></div>
+                <div class="col-md-6 text-md-start text-center">
+
+                    {% if editName == TRUE and (myUserId == userId or myAdmin) %}
+                    <form class="col-md-6 text-wrap d-flex gap-2" method="post" action="pureScripts/update.php">
+                        <input type='text' name="username" value="{{username}}" class="mb-2 h1 border-0" maxlength="50" autofocus> </input>
+                        <input type="hidden" name="userId" value="{{userId}}">
+                        <input type="hidden" name="returnUrl" value="profile.php?id={{userId}}">
+                        <input type="hidden" name="updateType" value="username">
+                        <input type="submit" value="Save" class="btn btn-primary my-auto">
+                    </form>
+                    {% else %}
+                        <h1 class="mb-2" style="word-wrap: break-word;">{{username}}</h1>
+                    {% endif %}
+
+
+                    {% if myUserId == userId or myAdmin %}
+                    <div>
+                        <a href="profile.php?id={{userId}}&editName=true" class="btn btn-secondary mb-3">Edit username</a>
+                    </div>
+                    {% endif %}
+                    {% if admin %}
+                    <h5 class="mb-5 text-danger fw-bold">Administrator</h5>
+                    {% endif%}
+
+
+                    <div class="text-start d-inline-block">
+                        <p>Registered on: {{regDate}}</p>
+                        <p>e-mail: {{email}}</p>
+                        <p>Number of galleries: {{nrGalleries}}</p>
+                        <p>Number of photos: {{nrPhotos}}</p>
+                        <a href="galleryList.php?owner={{userId}}" class="btn btn-success">Galleries</a>
+                    </div>
+                </div>
+            </div>
+
+            {% if myUserId == userId or myAdmin %}
+                <div class="row text-start">
+                    <div class="col-2"></div>
+                    <div class="col-4">
+                        <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#deleteConfirmation">Delete account</button>
+                        <form action="pureScripts/delete.php" method="post" id="deleteConfirmation" class="{% if deleteErrorMessage is defined %} show {% else %} collapse {% endif %}">
+                            {% if deleteErrorMessage is defined %}
+                                <h5 class="text-danger">{{deleteErrorMessage}}</h5>
+                            {% endif %}
+                            <label for="password" class="my-2">Type password to confirm</label>
+                            <input type="password" name="password" class="form-control text-center mb-3">
+                            <input type="hidden" name="userId" value="{{userId}}">
+                            <input type="hidden" name="deleteType" value="user">
+                            <input type="submit" name="submit" class="btn btn-danger" value="Confirm">
+                        </form>
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#changePasswordConfirmation">Change password</button>
+                        <form action="pureScripts/update.php" method="post" id="changePasswordConfirmation" class="{% if passwordChangeErrorMessage is defined %} show {% else %} collapse {% endif %}">
+                            {% if passwordChangeErrorMessage is defined %}
+                                <h5 class="text-danger">{{passwordChangeErrorMessage}}</h5>
+                            {% endif %}
+                            <label for="oldPassword" class="my-2">Old password</label>
+                            <input type="password" name="oldPassword" class="form-control text-center mb-3">
+
+                            <label for="newPassword" class="my-2">New password</label>
+                            <input type="password" name="newPassword" class="form-control text-center mb-3">
+
+                            <label for="newPasswordConfirm" class="my-2">Confirm new password</label>
+                            <input type="password" name="newPasswordConfirm" class="form-control text-center mb-3">
+                            
+                            <input type="hidden" name="userId" value="{{userId}}">
+                            <input type="hidden" name="updateType" value="password">
+                            <input type="submit" name="submit" class="btn btn-warning" value="Confirm">
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% endif %}
+    </main>
+
+{% endblock %}

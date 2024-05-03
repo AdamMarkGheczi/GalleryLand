@@ -1,0 +1,84 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+
+
+<main class="container">
+{% if errorMessage is defined %}
+    <div class="text-center my-3 ">
+        <p class="text-danger fw-bold">{{errorMessage}}</p>
+    </div>
+{% endif %}
+
+{% include('pagination.tpl.html') with {'type': 'userList'} %}
+
+{% for user in users %}
+
+<div class="card mb-3">
+    <div class="row no-gutters">
+        <div class="col-md-4 d-flex">
+        <img src="{{user.profilePicture}}" class="card-img my-auto bg-light" height="200" width="400" style="object-fit: contain;">
+        </div>
+        <div class="col-md-8">
+        <div class="card-body">
+            {% if editUsername == user.id %}
+            <form class="text-wrap d-flex gap-2 mb-2" method="post" action="pureScripts/update.php">
+                <input type='text' name="username" value="{{user.username}}" class="h5 border-0 mb-0" maxlength="50" autofocus></input>
+                <input type="hidden" name="userId" value="{{user.id}}">
+                <input type="hidden" name="updateType" value="username">
+                <input type="hidden" name="returnUrl" value="manageAllUsers.php?page={{paginationArray.currentPage}}">
+                <input type="submit" value="Save" class="btn btn-primary my-auto">
+            </form>
+            {% else %}
+                <a href="profile.php?id={{user.id}}" class="card-title h4 text-primary">{{user.username}}</a>
+                {% if user.admin %}
+                    <p class="text-danger fw-bold mb-1">Administrator</p>
+                {% endif %}
+            {% endif %}
+
+            <p class="card-text mb-1"><small class="text-body-secondary"><b>Registered on:</b> {{user.regdate}}</small></p>
+            <p class="card-text mb-1"><small class="text-body-secondary"><b>Email:</b> {{user.email}}</small></p>
+            <p class="card-text mb-3"><small class="text-body-secondary"><b>Number of galleries: </b>{{user.nrGalleries}} <b>Number of photos: </b> {{user.nrPhotos}}</small></p>
+
+            {% if myAdmin or gallery.ownerId == myUserId %}
+            <div class="d-flex flex-column flex-lg-row gap-2 gap-lg-5 mb-2">
+                <a href="galleryList.php?owner={{user.id}}" class="btn btn-success">Galleries</a>
+                <a href="manageAllUsers.php?page={{paginationArray.currentPage}}&editUsername={{user.id}}" class="btn btn-secondary">Edit username</a>
+                <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#changePasswordConfirmation{{user.id}}">Change password</button>
+                <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#deleteUser{{user.id}}">Delete user</button>
+            </div>
+            
+            <form action="pureScripts/update.php" method="post" id="changePasswordConfirmation{{user.id}}" class="collapse">
+                <label for="newPassword" class="my-2">New password</label>
+                <input type="password" name="newPassword" class="form-control mb-3">
+
+                <label for="newPasswordConfirm" class="my-2">Confirm new password</label>
+                <input type="password" name="newPasswordConfirm" class="form-control mb-3">
+                
+                <input type="hidden" name="userId" value="{{user.id}}">
+                <input type="hidden" name="updateType" value="password">
+                <input type="hidden" name="returnUrl" value="manageAllUsers.php?page={{paginationArray.currentPage}}">
+                <input type="submit" name="submit" class="btn btn-warning" value="Confirm">
+            </form>
+            <form action="pureScripts/delete.php" method="post" class="collapse form-control text-start" id="deleteUser{{user.id}}">
+                <p>Are you sure? This cannot be undone!</p>
+                <input type="hidden" name="userId" value="{{user.id}}">
+                <input type="hidden" name="deleteType" value="user">
+                <input type="hidden" name="returnUrl" value="manageAllUsers.php?page={{paginationArray.currentPage}}">
+                <input type="submit" name="confirmDeletion" value="Confirm" class="btn btn-danger">
+            </form>
+            {% endif %}
+        </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+{% include('pagination.tpl.html') with {'type': 'userList'} %}
+
+</main>
+
+
+
+{% endblock%}

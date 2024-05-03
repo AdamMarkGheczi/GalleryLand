@@ -1,0 +1,41 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+
+    <main class="container">
+        <div class="row">
+            <div class="col text-center">
+                <img src="images/logo.png" height="200" class="mt-2">
+            </div>
+        </div>
+
+        <div class="row text-center">
+            <h1 class="my-4 fw-bold">Sign Up</h1>
+        </div>
+
+        {% if errorMsg != "" %}
+            <div class="row text-center">
+                <p class="fw-bold text-danger">{{errorMsg}}</p>
+            </div>
+        {% endif %}
+
+        <div class="row flex justify-content-center">
+            <div class="border rounded bg-warning bg-gradient col-sm-4 p-3 text-center ">
+                <form action="pureScripts/signupScript.php" method="post" >
+                    <input class="form-control text-center mb-3" type="text" name="username" placeholder="Username" maxlength="50">
+                    <input class="form-control text-center mb-3" type="text" name="email" placeholder="Email" maxlength="50">
+                    <input class="form-control text-center mb-3" type="password" name="password" placeholder="Password">
+                    <input class="form-control text-center mb-3" type="password" name="confPassword" placeholder="Confirm password">
+                    <input class="btn btn-danger" type="submit" name="submit" value="Sign Up">
+                    <span>
+                        <br>
+                        Already a member?
+                        <a href="loginForm.php">Log in</a>
+                    </span>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+{% endblock%}
