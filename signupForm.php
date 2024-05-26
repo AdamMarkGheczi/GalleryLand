@@ -29,4 +29,4 @@ if (isset($_GET['error'])) {
 $loader = new \Twig\Loader\FilesystemLoader('templates');
 $twig = new \Twig\Environment($loader);
 
-echo $twig->render('signup.tpl.html', ['errorMsg' => $errorMsg]);
+echo $twig->render('signup.tpl.html', ['errorMsg' => $errorMsg, 'removeProfileDropdown' => true]);
